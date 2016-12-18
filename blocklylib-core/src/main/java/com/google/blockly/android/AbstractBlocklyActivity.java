@@ -324,7 +324,6 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
         mBlockViewFactory = onCreateBlockViewFactory(mWorkspaceHelper);
 
         BlocklyController.Builder builder = new BlocklyController.Builder(this)
-                .setAssetManager(getAssets())  // TODO(#128) Remove
                 .setWorkspaceHelper(mWorkspaceHelper)
                 .setBlockViewFactory(mBlockViewFactory)
                 .setVariableCallback(getVariableCallback())
@@ -334,6 +333,7 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
                 .setTrashFragment(mTrashFragment)
                 .setToolboxFragment(mToolboxFragment, mDrawerLayout);
         mController = builder.build();
+
         onConfigureTrashIcon();
         onConfigureZoomInButton();
         onConfigureZoomOutButton();
@@ -369,8 +369,13 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(
                     "Default BlockViewFactory not found. Did you include blocklylib-vertical?", e);
-        } catch (NoSuchMethodException | InstantiationException |
-                IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Unable to instantiate VerticalBlockViewFactory", e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Unable to instantiate VerticalBlockViewFactory", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to instantiate VerticalBlockViewFactory", e);
+        } catch (InvocationTargetException e) {
             throw new RuntimeException("Unable to instantiate VerticalBlockViewFactory", e);
         }
     }
@@ -700,6 +705,8 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
                     mController.zoomIn();
                 }
             });
+            ZoomBehavior zoomBehavior = mWorkspaceHelper.getZoomBehavior();
+            zoomInButton.setVisibility(zoomBehavior.isButtonEnabled()? View.VISIBLE : View.GONE);
         }
     }
 
@@ -720,6 +727,8 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
                     mController.zoomOut();
                 }
             });
+            ZoomBehavior zoomBehavior = mWorkspaceHelper.getZoomBehavior();
+            zoomOutButton.setVisibility(zoomBehavior.isButtonEnabled()? View.VISIBLE : View.GONE);
         }
     }
 
@@ -740,6 +749,8 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
                     mController.recenterWorkspace();
                 }
             });
+            ZoomBehavior zoomBehavior = mWorkspaceHelper.getZoomBehavior();
+            recenterButton.setVisibility(zoomBehavior.isFixed()? View.GONE : View.VISIBLE);
         }
     }
 

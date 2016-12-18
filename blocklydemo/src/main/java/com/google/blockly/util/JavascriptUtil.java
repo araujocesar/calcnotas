@@ -20,15 +20,20 @@ package com.google.blockly.util;
  */
 public class JavascriptUtil {
     /**
-     * Creates a double quoted Javascript string, escaping backslashes, single quotes, double
-     * quotes, and newlines.
+     * Creates a double quoted Javascript string, escaping backslashes, forward slashes, single
+     * quotes, double quotes, and escape characters.
      */
     public static String makeJsString(String str) {
-        // TODO(#17): More complete character escaping.
-        String escapedStr = str.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
+        // TODO(#17): More complete character escaping: unicode characters to hex, octal, or \\u.
+        String escapedStr = str.replace("\\", "\\\\")  // Must escape backslashes first.
+                .replace("</", "<\\/")  // See: http://stackoverflow.com/a/6117915
                 .replace("\'", "\\\'")
-                .replace("\n", "\\n");
+                .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
         return "\"" + escapedStr + "\"";
     }
 
